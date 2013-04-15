@@ -8,7 +8,7 @@ from google.appengine.ext.webapp \
 class MyHandler(webapp.RequestHandler):
 	def get(self):
 		#self.response.out.write(template.render('index.html', {}))
-		self.response.out.write("hi")
+		self.response.out.write("Hello")
 
 def main():
 	app = webapp.WSGIApplication([(r'.*', MyHandler)], debug=True)
