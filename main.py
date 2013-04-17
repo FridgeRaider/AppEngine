@@ -117,8 +117,8 @@ class FridgeraiderApi(remote.Service):
    
     def updateIngredientQuantity(self,request):
         """
-        This method will remove an ingrediants. it will find the ingrediant
-        based on user email and ingrediant name and remove it. Returns deleted ingrediant
+        This method will replace the quantity stored with a new quantity. 
+        It will then store the new one and return
         """
         qo = ndb.QueryOptions(keys_only=True,limit = 1)
         qry  = Ingredient.query().filter(Ingredient.userEmail==request.userEmail).filter(Ingredient.displayName == request.displayName)
