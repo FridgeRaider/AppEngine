@@ -80,10 +80,10 @@ class FridgeraiderApi(remote.Service):
         return IngredientList(items=ingredients)
 
 
-    @Ingredient.method(name='ingrediants.add',
-                 path='ingrediants/{displayName}/{quantity}/{userEmail}',
+    @Ingredient.method(name='ingredients.add',
+                 path='ingredients/{displayName}/{quantity}/{userEmail}',
                  http_method='GET')
-    def addIngrediant(self,request):
+    def addIngredient(self,request):
         """
         This method will add ingrediants in similar fashion to the User.
         It will also compute the experation data. It returns the Ingrediant object
@@ -97,10 +97,10 @@ class FridgeraiderApi(remote.Service):
         ingred = ingred_key.get()
         return ingred
 
-    @Ingredient.method(name='ingrediants.remove',
-                 path='ingrediants/{displayName}/{userEmail}',
+    @Ingredient.method(name='ingredients.remove',
+                 path='ingredients/{displayName}/{userEmail}',
                  http_method='GET')
-    def removeIngrediant(self,request):
+    def removeIngredient(self,request):
         """
         This method will remove an ingrediants. it will find the ingrediant
         based on user email and ingrediant name and remove it. Returns deleted ingrediant
@@ -110,7 +110,22 @@ class FridgeraiderApi(remote.Service):
         toRemove = qry.get()
         toRemove.key.delete()
         return toRemove
+
+    @Ingredient.method(name='ingredients.updateQuantity',
+                 path='ingredients/update/{displayName}/{userEmail}/{quantity}',
+                 http_method='GET')
    
+    def updateIngredientQuantity(self,request):
+        """
+        This method will remove an ingrediants. it will find the ingrediant
+        based on user email and ingrediant name and remove it. Returns deleted ingrediant
+        """
+        qo = ndb.QueryOptions(keys_only=True,limit = 1)
+        qry  = Ingredient.query().filter(Ingredient.userEmail==request.userEmail).filter(Ingredient.displayName == request.displayName)
+        ind = qry.get()
+        ind.quantity = request.quantity
+        ind.put()
+        return ind
 
 
 application = endpoints.api_server([FridgeraiderApi])
