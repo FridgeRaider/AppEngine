@@ -1,0 +1,47 @@
+<html>
+<head>
+<script src="https://apis.google.com/js/client.js?onload=init"></script>
+</head>
+    <body>
+        <div class="container">
+          <section id="content">
+            <!-- Login Form: Username and Password field. Checks with Middle for confirmation -->
+            <div id="form">
+                <form onsubmit="return false">
+                    <h1>CourseSketch</h1>
+                    <div id="user">
+                        <input type="text" name="username" placeholder="email" required="" id="username" />
+                    </div>
+                    <div id="user">
+                        <input type="password" name="password" placeholder="Password" required="" id="password" />
+                    </div>
+                    <div>
+    					<input type="submit" onclick="logIn();" value="Login">
+                    </div>
+                </form>
+            </div>
+          </section>
+        </div>
+        <script>
+        function init() {
+        console.log("Good to go");
+        }
+        function logIn() {
+        var username = document.getElementById("username");
+        var password = document.getElementById("password");
+        alert(username.value);
+        alert(password.value);
+        var ROOT = "https://hungrynorse.appspot.com/_ah/api";
+        gapi.client.load('hungrynorse', 'v1', function() {
+            console.log("About to Send Data");
+            gapi.client.hungrynorse.users.login({"email":username.value, "password":password.value}).execute(response);
+            }, ROOT);
+        }
+
+        function response(data){
+        console.log(data);
+        }
+        </script>
+
+    </body>
+</html>
