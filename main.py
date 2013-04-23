@@ -5,6 +5,7 @@ from protorpc import message_types
 from protorpc import remote
 from endpoints_proto_datastore.ndb import EndpointsModel
 from datetime import date, timedelta
+import random
 
 
 class User(EndpointsModel):
@@ -22,11 +23,9 @@ class Ingredient(EndpointsModel):
     upc = ndb.StringProperty()
     experationDate = ndb.DateProperty()
 
-class Recipes(EndpointsModel):
-    displayName = ndb.StringProperty()
-    quantity = ndb.FloatProperty()
-    dateAdded = ndb.DateProperty(auto_now_add=True)
-    ingredientsRequired = ndb.StringProperty()
+class IngredientList(EndpointsModel):
+    userEmail = ndb.StringProperty()
+    ingredients = ndb.StructuredProperty(Ingredient, repeated=True)
 
 
 @endpoints.api(name='hungrynorse', version='v1',
@@ -65,19 +64,36 @@ class FridgeraiderApi(remote.Service):
         user = user_key.get()
         return user
 
-    @User.method(name='users.listIngrediants',
-                 path='user/{email}',
+    @IngredientList.method(name='ingredient.list',
+                 path='ingredient/{userEmail}',
                  http_method='GET')
     def listIngrediant(self,request):
         """
         This will return all ingrediants associated with a users Email
-        Currently does not work.  Needs some help!
         """
         ingredients = []
-        qry  = Ingredient.query().filter(Ingredient.userEmail==request.email)
+        qry  = Ingredient.query().filter(Ingredient.userEmail==request.userEmail)
+        print random.sample(qry,2)
         for ind in qry:
             ingredients.append(ind)
-        return IngredientList(items=ingredients)
+        return IngredientList(userEmail = request.userEmail,ingredients=ingredients)
+
+    @User.method(name='users.isUser',
+                 path='users/{email}',
+                 http_method='GET')
+    def isUser(self,request):
+        """
+        If user name is taken, it returns a user object with that email, 
+        otherwise it returns a blank user object if in the user is free
+        """
+        qo = ndb.QueryOptions(keys_only=True)
+        qry  = User.query().filter(User.email==request.email).count()
+        print qry
+        if qry!=0:
+            return User(email=request.email)
+        else:
+            return User()
+
 
 
     @Ingredient.method(name='ingredients.add',
