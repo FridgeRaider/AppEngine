@@ -95,6 +95,17 @@ class FridgeraiderApi(remote.Service):
             return User()
 
 
+    @User.method(name='users.getUser',
+                 path='getuser/{email}',
+                 http_method='GET')
+    def getUserObject(self,request):
+        """
+        Returns a userObject given an email
+        """
+        qo = ndb.QueryOptions(keys_only=True)
+        qry  = User.query().filter(User.email==request.email)
+        return qry.get()
+
 
     @Ingredient.method(name='ingredients.add',
                  path='ingredients/{displayName}/{quantity}/{userEmail}',
