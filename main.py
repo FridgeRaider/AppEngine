@@ -73,7 +73,6 @@ class FridgeraiderApi(remote.Service):
         """
         ingredients = []
         qry  = Ingredient.query().filter(Ingredient.userEmail==request.userEmail)
-        print random.sample(qry,2)
         for ind in qry:
             ingredients.append(ind)
         return IngredientList(userEmail = request.userEmail,ingredients=ingredients)
