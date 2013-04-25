@@ -16,12 +16,12 @@ class User(EndpointsModel):
     lastUpdated = ndb.DateProperty(auto_now=True)
 
 class Ingredient(EndpointsModel):
-    displayName = ndb.StringProperty()
+    ingredientName = ndb.StringProperty()
     userEmail = ndb.StringProperty(required=True)
     quantity = ndb.FloatProperty()
     dateAdded = ndb.DateProperty(auto_now_add=True)
     upc = ndb.StringProperty()
-    experationDate = ndb.DateProperty()
+    expirationDate = ndb.DateProperty()
 
 class IngredientList(EndpointsModel):
     userEmail = ndb.StringProperty()
@@ -108,24 +108,24 @@ class FridgeraiderApi(remote.Service):
 
 
     @Ingredient.method(name='ingredients.add',
-                 path='ingredients/{displayName}/{quantity}/{userEmail}',
+                 path='ingredients/{ingredientName}/{quantity}/{userEmail}',
                  http_method='GET')
     def addIngredient(self,request):
         """
         This method will add ingrediants in similar fashion to the User.
         It will also compute the experation data. It returns the Ingrediant object
         """
-        ingred = Ingredient(displayName=request.displayName,
+        ingred = Ingredient(ingredientName=request.ingredientName,
                       quantity = request.quantity,
                       userEmail = request.userEmail,
-                      experationDate = date.today()+timedelta(days=14))
+                      expirationDate = date.today()+timedelta(days=14))
         ingred_key = ingred.put()
         print ingred_key
         ingred = ingred_key.get()
         return ingred
 
     @Ingredient.method(name='ingredients.remove',
-                 path='ingredients/{displayName}/{userEmail}',
+                 path='ingredients/{ingredientName}/{userEmail}',
                  http_method='GET')
     def removeIngredient(self,request):
         """
@@ -133,13 +133,13 @@ class FridgeraiderApi(remote.Service):
         based on user email and ingrediant name and remove it. Returns deleted ingrediant
         """
         qo = ndb.QueryOptions(keys_only=True,limit = 1)
-        qry  = Ingredient.query().filter(Ingredient.userEmail==request.userEmail).filter(Ingredient.displayName == request.displayName)
+        qry  = Ingredient.query().filter(Ingredient.userEmail==request.userEmail).filter(Ingredient.ingredientName == request.ingredientName)
         toRemove = qry.get()
         toRemove.key.delete()
         return toRemove
 
     @Ingredient.method(name='ingredients.updateQuantity',
-                 path='ingredients/update/{displayName}/{userEmail}/{quantity}',
+                 path='ingredients/update/{ingredientName}/{userEmail}/{quantity}',
                  http_method='GET')
    
     def updateIngredientQuantity(self,request):
@@ -148,7 +148,7 @@ class FridgeraiderApi(remote.Service):
         It will then store the new one and return
         """
         qo = ndb.QueryOptions(keys_only=True,limit = 1)
-        qry  = Ingredient.query().filter(Ingredient.userEmail==request.userEmail).filter(Ingredient.displayName == request.displayName)
+        qry  = Ingredient.query().filter(Ingredient.userEmail==request.userEmail).filter(Ingredient.ingredientName == request.ingredientName)
         ind = qry.get()
         ind.quantity = request.quantity
         ind.put()
