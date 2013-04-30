@@ -153,5 +153,21 @@ class FridgeraiderApi(remote.Service):
         ind.put()
         return ind
 
+    @Ingredient.method(name='ingredients.updateExperationDate',
+                 path='ingredients/updateExDate/{ingredientName}/{userEmail}/{expirationDate}',
+                 http_method='GET')
+   
+    def updateIngredientExpDate(self,request):
+        """
+        This will update the Exeration date to a number of days from now.        
+        """
+        qo = ndb.QueryOptions(keys_only=True,limit = 1)
+        qry  = Ingredient.query().filter(Ingredient.userEmail==request.userEmail).filter(Ingredient.ingredientName == request.ingredientName)
+        ind = qry.get()
+        ind.expirationDate = request.expirationDate
+        ind.put()
+        return ind
+
+
 
 application = endpoints.api_server([FridgeraiderApi])
