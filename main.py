@@ -159,7 +159,7 @@ class FridgeraiderApi(remote.Service):
    
     def updateIngredientExpDate(self,request):
         """
-        This will update the Exeration date to a number of days from now.        
+        This will update the Exeration date if given in a formate of yyyy-mm-dd.        
         """
         qo = ndb.QueryOptions(keys_only=True,limit = 1)
         qry  = Ingredient.query().filter(Ingredient.userEmail==request.userEmail).filter(Ingredient.ingredientName == request.ingredientName)
